@@ -1,6 +1,181 @@
-<!doctype html><head><style>body{ font-family: arial;}
-button{ padding:10px; background-color:#6a67ce; color: #FFFFFF; border: 0px; cursor:pointer; border-radius: 5px; padding-left: 5px; margin-bottom: 5px;} #button-start{ display: none;} #button-stop{ display: none;} #button-clear{ display: none;}
-#output{ background-color:#F9F9F9; padding:10px; width: 100%; margin-top:20px; line-height:30px;}
-.hide{ display:none;}
-.show{ display:block !important;} @media only screen and (max-width: 768px){ #output{ width: 75%;} #saved{ width: 75%;}} </style><title>AyoRisalah</title></head><body><h2>Risalah Demo</h2><p id="action"><small>Klik untuk memulai...</small></p><p><button id="button-start" type="button" onclick="run()">Mulai</button><button id="button-stop" type="button" onclick="stop()">Berhenti</button><button id="button-clear" type="button" onclick="unload()">Bersihkan</button></p><p>Output:</p><div id="output"></div><p>Tersimpan:</p><div id="saved"></div><script>var recognition; var data_text={}; var id=getID(); var action=document.getElementById("action"); var output=document.getElementById("output"); var saved=document.getElementById("saved"); var buttonStart=document.getElementById("button-start"); var buttonStop=document.getElementById("button-stop"); var buttonClear=document.getElementById("button-clear"); buttonStart.classList.add("show"); load(); function getID(){ var n=new Date(); return `${n.getFullYear()}${n.getMonth().toString().padStart(2,'0')}${n.getDate().toString().padStart(2,'0')}${n.getHours().toString().padStart(2,'0')}${n.getMinutes().toString().padStart(2,'0')}`;} function unload(){ console.warn('CLEAR'); data_text={}; localStorage.setItem('data_text',JSON.stringify(data_text)); load();} function save(){ var a=data_text[id]; var b=output.innerText; if(a){ if(b.includes(a)){ data_text[id]=b;} else{ data_text[id]=`${data_text[id]}\r\n${output.innerText}`;}} else{ data_text[id]=output.innerText;} localStorage.setItem('data_text',JSON.stringify(data_text)); saved.innerHTML=''; for(let o in data_text){ let el=document.createElement('span'); el.id=o; el.innerHTML=`<strong>[${o}]</strong>${data_text[o]}<br><br>`; saved.appendChild(el);} if(saved.innerHTML !==''){ buttonClear.classList.add("show");} else{ buttonClear.classList.remove("show");}} function load(){ let data=localStorage.getItem('data_text'); try{ if(data){ data_text=JSON.parse(data); saved.innerHTML=''; for(let o in data_text){ let el=document.createElement('span'); el.id=o; el.innerHTML=`<strong>[${o}]</strong>${data_text[o]}<br><br>`; saved.appendChild(el);}}} catch{ localStorage.setItem('data_text',JSON.stringify(data_text));} if(saved.innerHTML !==''){ buttonClear.classList.add("show");} else{ buttonClear.classList.remove("show");}} function stop(){ recognition && recognition.stop();} function run(){ var SpeechRecognition=SpeechRecognition || webkitSpeechRecognition; recognition=new SpeechRecognition(); recognition.lang='id-ID'; recognition.continuous=true; recognition.interimResults=true; recognition.onstart=function(){ action.innerHTML="<small>sedang mendengarkan, silahkan bicara...</small>"; buttonStart.classList.remove("show"); buttonStop.classList.add("show");}; recognition.onspeechend=function(){ action.innerHTML="<small>Selesai.</small>"; buttonStart.classList.add("show"); buttonStop.classList.remove("show"); save();} recognition.onresult=function(event){ id=getID(); let content=''; for(let i=0; i < event.results.length; i ++){ let item=event.results[i]; content +=`${item[0].transcript}\r\n`;} output.innerHTML=`${content}`;}; recognition.start();}
-</script></body></html>
+<!doctype html>
+
+<head>
+    <style>
+        body {
+            font-family: arial;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #6a67ce;
+            color: #FFFFFF;
+            border: 0px;
+            cursor: pointer;
+            border-radius: 5px;
+            padding-left: 5px;
+            margin-bottom: 5px;
+        }
+
+        #button-start {
+            display: none;
+        }
+
+        #button-stop {
+            display: none;
+        }
+
+        #button-clear {
+            display: none;
+        }
+
+        #output {
+            background-color: #F9F9F9;
+            padding: 10px;
+            width: 100%;
+            margin-top: 20px;
+            line-height: 30px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        @media only screen and (max-width: 768px) {
+            #output {
+                width: 75%;
+            }
+
+            #saved {
+                width: 75%;
+            }
+        }
+    </style>
+    <title>AyoRisalah</title>
+</head>
+
+<body>
+    <h2>Risalah Demo</h2>
+    <p id="action"><small>Klik untuk memulai...</small></p>
+    <p><button id="button-start" type="button" onclick="run()">Mulai</button><button id="button-stop" type="button"
+            onclick="stop()">Berhenti</button><button id="button-clear" type="button"
+            onclick="unload()">Bersihkan</button></p>
+    <p>Output:</p>
+    <div id="output"></div>
+    <p>Tersimpan:</p>
+    <div id="saved"></div>
+    <script>
+        var recognition;
+        var data_text = {};
+        var id = getID();
+        var action = document.getElementById("action");
+        var output = document.getElementById("output");
+        var saved = document.getElementById("saved");
+        var buttonStart = document.getElementById("button-start");
+        var buttonStop = document.getElementById("button-stop");
+        var buttonClear = document.getElementById("button-clear");
+        buttonStart.classList.add("show");
+        load();
+
+        function getID() {
+            var n = new Date();
+            return `${n.getFullYear()}${n.getMonth().toString().padStart(2,'0')}${n.getDate().toString().padStart(2,'0')}${n.getHours().toString().padStart(2,'0')}${n.getMinutes().toString().padStart(2,'0')}`;
+        }
+
+        function unload() {
+            console.warn('CLEAR');
+            data_text = {};
+            localStorage.setItem('data_text', JSON.stringify(data_text));
+            load();
+        }
+
+        function save() {
+            var a = data_text[id];
+            var b = output.innerText;
+            if (a) {
+                if (b.includes(a)) {
+                    data_text[id] = b;
+                } else {
+                    data_text[id] = `${data_text[id]}\r\n${output.innerText}`;
+                }
+            } else {
+                data_text[id] = output.innerText;
+            }
+            localStorage.setItem('data_text', JSON.stringify(data_text));
+            saved.innerHTML = '';
+            for (let o in data_text) {
+                let el = document.createElement('span');
+                el.id = o;
+                el.innerHTML = `<strong>[${o}]</strong>${data_text[o]}<br><br>`;
+                saved.appendChild(el);
+            }
+            if (saved.innerHTML !== '') {
+                buttonClear.classList.add("show");
+            } else {
+                buttonClear.classList.remove("show");
+            }
+        }
+
+        function load() {
+            let data = localStorage.getItem('data_text');
+            try {
+                if (data) {
+                    data_text = JSON.parse(data);
+                    saved.innerHTML = '';
+                    for (let o in data_text) {
+                        let el = document.createElement('span');
+                        el.id = o;
+                        el.innerHTML = `<strong>[${o}]</strong>${data_text[o]}<br><br>`;
+                        saved.appendChild(el);
+                    }
+                }
+            } catch {
+                localStorage.setItem('data_text', JSON.stringify(data_text));
+            }
+            if (saved.innerHTML !== '') {
+                buttonClear.classList.add("show");
+            } else {
+                buttonClear.classList.remove("show");
+            }
+        }
+
+        function stop() {
+            recognition && recognition.stop();
+        }
+
+        function run() {
+            var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.onstart = function () {
+                action.innerHTML = "<small>sedang mendengarkan, silahkan bicara...</small>";
+                buttonStart.classList.remove("show");
+                buttonStop.classList.add("show");
+            };
+            recognition.onspeechend = function () {
+                action.innerHTML = "<small>Selesai.</small>";
+                buttonStart.classList.add("show");
+                buttonStop.classList.remove("show");
+                save();
+            }
+            recognition.onresult = function (event) {
+                id = getID();
+                let content = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    let item = event.results[i];
+                    content += `${item[0].transcript}\r\n`;
+                }
+                output.innerHTML = `${content}`;
+            };
+            recognition.start();
+        }
+    </script>
+</body>
+
+</html>

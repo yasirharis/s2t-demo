@@ -1,1 +1,183 @@
-<!DOCTYPE html><html lang="en"><head><title>Suare ke Tulisan ~ menggunakan google speech recognition</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-smooth-scroll-offset="77"><div id="wait-wrapper"><div id="wait"></div><div class="wait-section section-left"></div><div class="wait-section section-right"></div></div><div class="main-container"><section class="switchable switchable--switch bg--secondary space--sm"><div class="container"><div id="dictation"><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><div style="display:none;visibility:hidden" class="input-select chrome langdd mt--2"><select name="lang" id="lang" onchange="dictation(&#34;lang&#34;)"><option value selected disabled>Pilih bahasa</option></select></div><div class="text-block mt--1"><p class="log"><span style="color:#252525">Klik micropon dan mulai berbicara</span> <img src="images/mic.svg" class="bars"></p></div><div class="notepad"><div id="toolbar"><span class="ql-formats"><button class="ql-bold"></button> <button class="ql-italic"></button> <button class="ql-underline"></button> </span><span class="ql-formats"><select class="ql-color"></select> <select class="ql-background"></select> <select class="ql-align"></select> </span><span class="ql-formats"><button class="ql-list" value="ordered"></button> <button class="ql-list" value="bullet"></button> <button class="ql-indent" value="-1"></button> <button class="ql-indent" value="+1"></button> </span><span class="ql-formats"><button class="ql-direction" value="rtl"></button> <button class="ql-clean"></button></span></div><div id="speech"></div><div class="action-buttons"><div class="left chrome"><a href="#" class="btn-mic btn btn--primary-1"><span class="btn__text listen">Mulai</span><div class="loading-indicator hide"></div></a></div><div class="right btn-group"><a data-tooltip="Salin tulisan ke clipboard" href="#" class="btn btn--sm btn--primary btn-clipboard"><span class="btn__text btn__copy">Salin</span> </a><a data-tooltip="Unduh berkas sebagai tulisan" href="#" onclick="return dictation(&#34;save&#34;),!1" class="btn btn--sm btn-save btn--primary"><span class="btn__text">Simpan</span> </a><a data-tooltip="Bersihkan Notepad" href="#" onclick="return dictation(&#34;clear&#34;),!1" class="btn btn--sm btn-clear btn--primary"><span class="btn__text">Bersihkan</span></a></div></div></div></div></div></div></section></div><div class="hidden"><div class="modal-instance"><a class="btn modal-trigger nochrome" href="#"><span class="btn__text">Google Chrome</span></a><div class="modal-container"><div class="modal-content"><div class="boxed boxed--lg text-center"><h3>Google Chrome Required</h3><p class="lead">Please open inside <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a> to use speech recognition.</p></div></div></div></div><div class="modal-instance"><a class="btn modal-trigger nomic" href="#"><span class="btn__text">Allow Microphone</span></a><div class="modal-container"><div class="modal-content"><div class="boxed boxed--lg text-center"><h3>Cannot Access Microphone</h3><p class="lead">Please ask your admin instructions on how to unblock your microphone.</p></div></div></div></div><div class="modal-instance"><a class="btn modal-trigger gist" href="#"><span class="btn__text">Publish Online</span></a><div class="modal-container"><div class="modal-content"><div class="boxed boxed--lg text-center"><p class="lead published hidden"></p></div></div></div></div><div class="modal-instance"><a class="btn modal-trigger tts" href="#"><span class="btn__text">Text to Speech</span></a><div class="modal-container"><div class="modal-content"><div class="boxed boxed--lg"><p class="lead">Speed is the rate at which the selected voice will speak your transcribed text while the pitch governs how high or low the voice speaks.</p><div class="row"><div class="col-xs-12 col-sm-4"><label>Voice:</label><div class="input-select"><select id="voiceselect"></select></div></div><div class="col-xs-12 col-sm-4"><label>Pitch:</label><div class="input-number"><input type="number" name="pitch" id="pitch" placeholder="Pitch" value="10" min="1" max="20"><div class="input-number__controls"><span class="input-number__increase"><i class="stack-up-open"></i> </span><span class="input-number__decrease"><i class="stack-down-open"></i></span></div></div></div><div class="col-xs-12 col-sm-4"><label>Speed:</label><div class="input-number"><input type="number" name="rate" id="rate" placeholder="rate" value="10" min="1" max="20"><div class="input-number__controls"><span class="input-number__increase"><i class="stack-up-open"></i> </span><span class="input-number__decrease"><i class="stack-down-open"></i></span></div></div></div></div><div class="row"><div class="col-sm-12"><p><br><a class="btn btn--primary type--uppercase" href="#" onclick="return dictation(&#34;tts&#34;),!1"><span class="btn__text btn-tts">Speak </span></a><a class="btn btn--primary-2 type--uppercase" href="#" onclick="return dictation(&#34;reset&#34;),!1"><span class="btn__text">Reset</span></a></p></div></div></div></div></div></div></div><a class="back-to-top inner-link" href="#start" data-scroll-class="100vh:active"><i class="stack-interface stack-up-open-big"></i></a><!-- <link rel="stylesheet" href="/css/style.css"> --><link rel="stylesheet" href="/css/style.min.css"><link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700" rel="stylesheet" type="text/css"><link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script><script src="/js/app.min.js"></script></body></html>
+<!doctype html>
+	<head>
+		<style>
+			/* CSS comes here */
+			body {
+			    font-family: arial;
+			}
+			button {
+			    padding:10px;
+			    background-color:#6a67ce;
+			    color: #FFFFFF;
+			    border: 0px;
+			    cursor:pointer;
+			    border-radius: 5px;
+                padding-left: 5px;
+                margin-bottom: 5px;
+			}
+            #button-start {
+			    display: none;
+			}
+            #button-stop {
+			    display: none;
+			}
+            #button-clear {
+			    display: none;
+			}
+			#output {
+			    background-color:#F9F9F9;
+			    padding:10px;
+			    width: 100%;
+			    margin-top:20px;
+			    line-height:30px;
+			}
+			.hide {
+			    display:none;
+			}
+			.show {
+			    display:block !important;
+			}
+            @media only screen and (max-width: 768px) {
+                #output {                    
+                    width: 75%;                    
+			    }
+                #saved {
+                    width: 75%; 
+			    }
+            }
+            
+		</style>
+		<title>AyoRisalah</title>
+	</head>
+	<body>
+		<h2>Risalah Demo</h2>
+        <p id="action"><small>Klik untuk memulai...</small></p>
+        <p>
+            <button id="button-start" type="button" onclick="run()">Mulai</button>         
+            <button id="button-stop" type="button" onclick="stop()">Berhenti</button>
+            <button id="button-clear" type="button" onclick="unload()">Bersihkan</button>
+        </p>
+        <p>Output:</p>
+        <div id="output"></div>
+        <p>Tersimpan:</p>
+        <div id="saved"></div>
+		<script>
+
+            var recognition;
+            var data_text = {}; 
+            var id = getID();
+            var action = document.getElementById("action");   
+            var output = document.getElementById("output");   
+            var saved = document.getElementById("saved"); 
+            var buttonStart = document.getElementById("button-start");  
+		    var buttonStop = document.getElementById("button-stop");  
+            var buttonClear = document.getElementById("button-clear");  
+
+            buttonStart.classList.add("show");
+
+            load();
+
+            function getID(){
+                var n = new Date();
+                return `${n.getFullYear()}${n.getMonth().toString().padStart(2,'0')}${n.getDate().toString().padStart(2,'0')}${n.getHours().toString().padStart(2,'0')}${n.getMinutes().toString().padStart(2,'0')}`;
+            }
+
+            function unload(){
+                console.warn('CLEAR');
+                data_text = {};
+                localStorage.setItem('data_text',JSON.stringify(data_text));
+                load();
+            }
+
+            function save(){
+                var a = data_text[id];
+                var b = output.innerText;
+                if(a){                    
+                    if(b.includes(a)){
+                        data_text[id] = b;
+                    } else {
+                        data_text[id] = `${data_text[id]}\r\n${output.innerText}`;
+                    }                    
+                } else {
+                    data_text[id] = output.innerText;
+                }
+                
+                localStorage.setItem('data_text',JSON.stringify(data_text));
+                saved.innerHTML = '';
+                for(let o in data_text){
+                    let el = document.createElement('span');
+                    el.id = o;
+                    el.innerHTML = `<strong>[${o}]</strong> ${data_text[o]}<br><br>`;
+                    saved.appendChild(el);
+                }
+                if(saved.innerHTML !== ''){
+                    buttonClear.classList.add("show");
+                } else {
+                    buttonClear.classList.remove("show");
+                }
+                
+
+            }
+            function load(){
+                let data = localStorage.getItem('data_text');
+                try{
+                    if(data){
+                        data_text = JSON.parse(data);
+                        saved.innerHTML = '';
+                        for(let o in data_text){
+                        let el = document.createElement('span');
+                        el.id = o;
+                        el.innerHTML = `<strong>[${o}]</strong> ${data_text[o]}<br><br>`;
+                        saved.appendChild(el);
+                        }                        
+                    } 
+                } catch{ 
+                    localStorage.setItem('data_text',JSON.stringify(data_text));                    
+                }
+                if(saved.innerHTML !== ''){
+                    buttonClear.classList.add("show");
+                } else {
+                    buttonClear.classList.remove("show");
+                }
+            }
+            function stop(){
+                recognition && recognition.stop();
+            }
+		    function run() {
+                var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'id-ID';
+
+                recognition.continuous = true;
+
+                recognition.interimResults = true;
+            
+                recognition.onstart = function() {
+                    action.innerHTML = "<small>sedang mendengarkan, silahkan bicara...</small>"; 
+                    buttonStart.classList.remove("show");
+                    buttonStop.classList.add("show");                  
+                };
+                
+                recognition.onspeechend = function() {
+                    action.innerHTML = "<small>Selesai.</small>";  
+                    buttonStart.classList.add("show");
+                    buttonStop.classList.remove("show");  
+                    save(); 
+                }
+              
+                recognition.onresult = function(event) {
+                    id = getID();
+                    let content = '';
+                    for(let i = 0; i < event.results.length; i ++){
+                        let item = event.results[i];
+                        content += `${item[0].transcript}\r\n`;
+                    }            
+                    output.innerHTML = `${content}`;                    
+                };
+              
+                 recognition.start();
+                 
+	        }
+		</script>
+	</body>
+</html>
